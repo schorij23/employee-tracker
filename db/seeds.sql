@@ -2,5 +2,21 @@
 
 -- examples
 
--- INSERT INTO department (id, name) VALUES (1, 'HR');
--- INSERT INTO role (id, title, salary, department_id) VALUES (1, 'Manager', 60000, 1);
+INSERT INTO department (name) VALUES
+('HR'),
+('IT'),
+('ACCOUNTING'),
+('LEGAL');
+INSERT INTO role (title, salary, department_id) VALUES 
+('Manager', 60000, 1),
+('Lawyer', 50000, 4),
+('Sales Lead', 50000, 3),
+('Salesperson', 30000, 3),
+('Lead Engineer', 70000, 2);
+INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES
+('John', 'Smith', 1, NULL), 
+('Dave', 'Johnson', 3, NULL),
+('Micheal', 'Jordan', 2, 1),
+('Steve', 'Smith', 5, NULL),
+('Micheal', 'Jones', 3, 3),
+('Micheal', 'Smith', 3, 3);
