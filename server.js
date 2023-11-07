@@ -42,7 +42,7 @@ connection.connect(function (err) {
               choices: [
                 'View all departments', 'View all roles', 'View all employees',
                 'Add a department', 'Add a role', 'Add an employee',
-                'Update an employee role',
+                'Update an employee role','Quit the App',
               ],
             },
           ])
@@ -61,13 +61,13 @@ connection.connect(function (err) {
               return promptForEmployeeInfo().then((answers) => addEmployee(answers.first_name, answers.last_name, answers.role_id, answers.manager_id));
             } else if (userChoice.options === 'Update an employee role') {
               return promptForUpdateEmployeeRoleInfo().then(updateEmployeeRole);
-            } else {
-              console.log('You made a mistake, try again');
-              return Promise.resolve();
+              } else if(userChoice.options === "Quit the App") {
+                return process.exit(); 
             }
           })
           .then(() => {
-            connection.end();
+            startDb()
+    
           })
           .catch((error) => {
             console.error('There was an error:', error);
@@ -124,7 +124,7 @@ function viewAllEmployees() {
     });
   });
 }
-
+      // REMEMBER TO CHANGE TO LIST WITH MULTIPLE CHOICES
       // Function to prompt to add a department
       function promptForDepartmentInfo() {
         return new Promise((resolve, reject) => {
@@ -227,7 +227,7 @@ function viewAllEmployees() {
               },
               {
                 type: 'input',
-                name: 'roleId',
+                name: 'role_id',
                 message: 'Enter the role ID for this employee:',
               },
               {
