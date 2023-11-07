@@ -1,5 +1,6 @@
 const inquirer = require('inquirer')
 const mysql = require('mysql2')
+const figlet = require("figlet");
 
 // Create the connection to database
 const connection = mysql.createConnection({
@@ -21,81 +22,294 @@ connection.connect(function (err) {
         console.log('connected');
         startDb();
       });
+
+      figlet("Employee Tracker", { font: 'Standard', box: true }, function (err, data) {
+        if (err) {
+          console.log("Something went wrong...");
+          console.dir(err);
+          return;
+        }
+        console.log(data);
+      });
       // Function to start the Database
       function startDb() {
-        // Prompt for User Choices for the Database
-        return inquirer.prompt([
+        return inquirer
+          .prompt([
             {
               type: 'list',
               name: 'options',
               message: 'What would you like to do?',
-              choices: ['View all departments','View all roles','View all employees','Add a department',
-              'Add a role','Add an employee','Update an employee role',],
+              choices: [
+                'View all departments', 'View all roles', 'View all employees',
+                'Add a department', 'Add a role', 'Add an employee',
+                'Update an employee role',
+              ],
             },
           ])
-          // After the user choice is made the function is called and options are handled
-          .then((answers) => {
-            const userChoice = answers.options;
-            if (userChoice === 'View all departments') {
+          .then((userChoice) => {
+            if (userChoice.options === 'View all departments') {
               return viewAllDepartments();
-            } else if (userChoice === 'View all roles') {
+            } else if (userChoice.options === 'View all roles') {
               return viewAllRoles();
-            } else if (userChoice === 'View all employees') {
+            } else if (userChoice.options === 'View all employees') {
               return viewAllEmployees();
-            } else if (userChoice === 'Add a department') {
-              return addDepartment();
-            } else if (userChoice === 'Add a role') {
-              return addRole();
-            } else if (userChoice === 'Add an employee') {
-              return addEmployee();
-            } else if (userChoice === 'Update an employee role') {
-              return updateEmployeeRole();
+            } else if (userChoice.options === 'Add a department') {
+              return promptForDepartmentInfo().then((answers) => addDepartment(answers.departmentName));
+            } else if (userChoice.options === 'Add a role') {
+              return promptForRoleInfo().then((answers) => addRole(answers.title, answers.salary, answers.departmentId));
+            } else if (userChoice.options === 'Add an employee') {
+              return promptForEmployeeInfo().then((answers) => addEmployee(answers.first_name, answers.last_name, answers.role_id, answers.manager_id));
+            } else if (userChoice.options === 'Update an employee role') {
+              return promptForUpdateEmployeeRoleInfo().then(updateEmployeeRole);
             } else {
-              console.log('Invalid choice');
+              console.log('You made a mistake, try again');
               return Promise.resolve();
             }
           })
-          // After the Promise is resolved stop database connection
           .then(() => {
             connection.end();
           })
-          // Catch the error and handle it for debugging
           .catch((error) => {
             console.error('There was an error:', error);
+          });
+      }
+
+      // Function to view all departments
+      function viewAllDepartments() {
+        // Create a asynchronous promise using resolve and reject to handle the results
+        return new Promise((resolve, reject) => {
+          // Select All from Depertaments
+          connection.query('SELECT * FROM department', (err, results) => {
+            // If there is an error reject the query
+            if (err) {
+              console.error('Error querying departments:', err);
+              reject(err);
+              // Otherwise Return the Results
+            } else {
+              console.table(results);
+              resolve(results);
+            }
+          });
         });
       }
-      // Function to view all department
-      function viewAllDepartments() {
-        // Add query logic and return a Promise
+
+// Function to view all roles
+function viewAllRoles() {
+  // Create a asynchronous promise using resolve and reject to handle the results
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM role', (err, results) => {
+      if (err) {
+        console.error('Error querying roles:', err);
+        reject(err);
+      } else {
+        console.table(results);
+        resolve(results);
+      }
+    });
+  });
+}
+
+// Function to view all employees
+function viewAllEmployees() {
+  // Create a asynchronous promise using resolve and reject to handle the results
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM employee', (err, results) => {
+      if (err) {
+        console.error('Error querying employees:', err);
+        reject(err);
+      } else {
+        console.table(results);
+        resolve(results);
+      }
+    });
+  });
+}
+
+      // Function to prompt to add a department
+      function promptForDepartmentInfo() {
+        return new Promise((resolve, reject) => {
+          inquirer
+            .prompt([
+              {
+                type: 'input',
+                name: 'departmentName',
+                message: 'Enter the department name:',
+              },
+            ])
+            .then((answers) => {
+              resolve(answers);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       }
 
-      // Function to view all roles
-      function viewAllRoles() {
-        // Add query logic and return a Promise
-      }
+      
+      function addDepartment(name) {
+        // Create a asynchronous promise using resolve and reject to handle the results
+          return new Promise((resolve, reject) => {
+            const sql = 'INSERT INTO department (name) VALUES (?)';
+            connection.query(sql, [name], (err, results) => {
+              if (err) {
+                console.error('Error adding department:', err);
+                reject(err);
+              } else {
+                console.log(`Department '${name}' added successfully.`);
+                resolve(results);
+              }
+            });
+          });
+        }
+            // Function to prompt for role information
+    function promptForRoleInfo() {
+      return new Promise((resolve, reject) => {
+        inquirer
+          .prompt([
+            {
+              type: 'input',
+              name: 'title',
+              message: 'Enter the role title:',
+            },
+            {
+              type: 'input',
+              name: 'salary',
+              message: 'Enter the role salary:',
+            },
+            {
+              type: 'input',
+              name: 'departmentId',
+              message: 'Enter the department ID for this role:',
+            },
+          ])
+          .then((answers) => {
+            resolve(answers);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    }
 
-      // Function to view all employes
-      function viewAllEmployees() {
-        // Add query logic and return a Promise
-      }
-
-      // Function to add a department
-      function addDepartment() {
-        // Add query logic and return a Promise
-      }
 
       // Function to add a role
-      function addRole() {
-        // Add query logic and return a Promise
+      function addRole(title, salary, department_id) {
+        // Create a asynchronous promise using resolve and reject to handle the results
+        return new Promise((resolve, reject) => {
+          const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
+          connection.query(sql, [title, salary, department_id], (err, results) => {
+            if (err) {
+              console.error('Error adding role:', err);
+              reject(err);
+            } else {
+              console.log(`Role '${title}' added successfully.`);
+              resolve(results);
+            }
+          });
+        });
       }
 
+            
+      // Function to prompt for employee information
+      function promptForEmployeeInfo() {
+        return new Promise((resolve, reject) => {
+          inquirer
+            .prompt([
+              {
+                type: 'input',
+                name: 'first_name',
+                message: 'Enter the employee\'s first name:',
+              },
+              {
+                type: 'input',
+                name: 'last_name',
+                message: 'Enter the employee\'s last name:',
+              },
+              {
+                type: 'input',
+                name: 'roleId',
+                message: 'Enter the role ID for this employee:',
+              },
+              {
+                type: 'input',
+                name: 'manager_id',
+                message: 'Enter the manager\'s ID for this employee (or leave empty if none):',
+              },
+            ])
+            .then((answers) => {
+              resolve(answers);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
+      }
       // Function to add an employee
-      function addEmployee() {
-        // Add query logic and return a Promise
+      function addEmployee(first_name, last_name, role_id, manager_id) {
+        // Create a asynchronous promise using resolve and reject to handle the results
+        return new Promise((resolve, reject) => {
+          // Convert manager_id to an integer or set it to null if it's empty
+            manager_id = manager_id === '' ? null : parseInt(manager_id);
+          const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+          connection.query(sql, [first_name, last_name, role_id, manager_id], (err, results) => {
+            if (err) {
+              console.error('Error adding employee:', err);
+              reject(err);
+            } else {
+              console.log(`Employee '${first_name} ${last_name}' added successfully.`);
+              resolve(results);
+            }
+          });
+        });
       }
+// Function to update an employee's role
+function updateEmployeeRole(employeeId, newRoleId) {
+  // Create an asynchronous promise using resolve and reject to handle the results
+  return new Promise((resolve, reject) => {
+    const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
+    connection.query(sql, [newRoleId, employeeId], (err, results) => {
+      if (err) {
+        console.error('Error updating employee role:', err);
+        reject(err);
+      } else {
+        console.log(`Employee with ID ${employeeId}'s role updated successfully.`);
+        resolve(results);
+      }
+    });
+  });
+}
 
-      // Function to update a employees role
-      function updateEmployeeRole() {
-        // Add query logic and return a Promise
-      }
+// Function to prompt for update employee role information
+function promptForUpdateEmployeeRoleInfo() {
+  return new Promise((resolve, reject) => {
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'employeeId',
+          message: 'Enter the employee\'s ID whose role you want to update:',
+        },
+        {
+          type: 'input',
+          name: 'newRoleId',
+          message: 'Enter the new role ID for the employee:',
+        },
+      ])
+      .then((answers) => {
+        updateEmployeeRole(answers.employeeId, answers.newRoleId)
+          .then(() => {
+            resolve();
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+
+
 

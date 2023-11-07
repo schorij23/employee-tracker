@@ -1,7 +1,5 @@
 -- seeds used to prepopulate your database fields so there is somthing in the db?
 
--- examples
-
 INSERT INTO department (name) VALUES
 ('HR'),
 ('IT'),
