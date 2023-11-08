@@ -173,7 +173,7 @@ function viewAllEmployees() {
 
             for (let index = 0; index < results.length; index++) {
               const element = results[index];
-              console.log(element);
+              // console.log(element);
               allDepartmentNames.push({name :element.name, value:element.id});
               
             }
@@ -206,11 +206,8 @@ function viewAllEmployees() {
           ])
           .then((answers) => {
             // loop through results variable on 174 find department id that matches the choosen department??
-            
             // change answer for department id from department name to id number in the departmentId
-
             // allDepartmentNames variable needs to work with addRole function
-            
             // change the string input to int to Set the correct department ID as an integer
             //answers.departmentId = choosen department id (something like this?)
             resolve(answers);
@@ -240,9 +237,33 @@ function viewAllEmployees() {
         });
       }
 
-            
+        
+          var allRoleNames = [];
+          function getAllRoles() {
+            connection.query('SELECT role_id,id FROM employee', (err, results) => {
+              // If there is an error reject the query
+              if (err) {
+                console.error('Error querying roles:', err);
+                reject(err);
+                // Otherwise Return the Results
+              } else {
+    
+                for (let index = 0; index < results.length; index++) {
+                  const element = results[index];
+                  console.log(element);
+                  allRoleNames.push({name :element.role_id, value:element.id});
+                  
+                }
+              }
+                
+            });
+          }
+
+
+
       // Function to prompt for employee information
-      function promptForEmployeeInfo() {
+      async function promptForEmployeeInfo() {
+        getAllRoles()
         return new Promise((resolve, reject) => {
           inquirer
             .prompt([
@@ -257,9 +278,10 @@ function viewAllEmployees() {
                 message: 'Enter the employee\'s last name:',
               },
               {
-                type: 'input',
+                type: 'list',
                 name: 'role_id',
-                message: 'Enter the role ID for this employee:',
+                message: "Enter the employee\'s role_id",
+                choices: allRoleNames,
               },
               {
                 type: 'input',
