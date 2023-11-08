@@ -205,12 +205,12 @@ function viewAllEmployees() {
           .then((answers) => {
             // loop through results variable on 174 find department id that matches the choosen department??
             
-            // change answer for department id from name departmentName to id departmentID
+            // change answer for department id from department name to id number in the departmentId
 
-            // allDepartmentNames need to work with addRole function
+            // allDepartmentNames variable needs to work with addRole function
             
             // change the string input to int to Set the correct department ID as an integer
-            //answers.departmentId = choosen department id
+            //answers.departmentId = choosen department id (something like this?)
 
             
             resolve(answers);
