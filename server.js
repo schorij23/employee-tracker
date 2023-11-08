@@ -163,7 +163,7 @@ function viewAllEmployees() {
         }
         var allDepartmentNames = [];
       function getAllDepartments() {
-        connection.query('SELECT name FROM department', (err, results) => {
+        connection.query('SELECT name,id FROM department', (err, results) => {
           // If there is an error reject the query
           if (err) {
             console.error('Error querying departments:', err);
@@ -173,7 +173,9 @@ function viewAllEmployees() {
 
             for (let index = 0; index < results.length; index++) {
               const element = results[index];
-              allDepartmentNames.push(element.name);
+              console.log(element);
+              allDepartmentNames.push({name :element.name, value:element.id});
+              
             }
           }
             
@@ -211,8 +213,6 @@ function viewAllEmployees() {
             
             // change the string input to int to Set the correct department ID as an integer
             //answers.departmentId = choosen department id (something like this?)
-
-            
             resolve(answers);
 
           })
