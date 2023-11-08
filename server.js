@@ -161,8 +161,27 @@ function viewAllEmployees() {
             });
           });
         }
-            // Function to prompt for role information
-    function promptForRoleInfo() {
+        var allDepartmentNames = [];
+      function getAllDepartments() {
+        connection.query('SELECT name FROM department', (err, results) => {
+          // If there is an error reject the query
+          if (err) {
+            console.error('Error querying departments:', err);
+            reject(err);
+            // Otherwise Return the Results
+          } else {
+
+            for (let index = 0; index < results.length; index++) {
+              const element = results[index];
+              allDepartmentNames.push(element.name);
+            }
+          }
+            
+        });
+      }  
+      // Function to prompt for role information
+    async function promptForRoleInfo() {
+      getAllDepartments();
       return new Promise((resolve, reject) => {
         inquirer
           .prompt([
@@ -177,13 +196,25 @@ function viewAllEmployees() {
               message: 'Enter the role salary:',
             },
             {
-              type: 'input',
+              type: 'list',
               name: 'departmentId',
               message: 'Enter the department ID for this role:',
+              choices: allDepartmentNames,
             },
           ])
           .then((answers) => {
+            // loop through results variable on 174 find department id that matches the choosen department??
+            
+            // change answer for department id from name departmentName to id departmentID
+
+            // allDepartmentNames need to work with addRole function
+            
+            // change the string input to int to Set the correct department ID as an integer
+            //answers.departmentId = choosen department id
+
+            
             resolve(answers);
+
           })
           .catch((error) => {
             reject(error);

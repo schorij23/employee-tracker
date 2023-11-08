@@ -4,7 +4,8 @@ INSERT INTO department (name) VALUES
 ('HR'),
 ('IT'),
 ('ACCOUNTING'),
-('LEGAL');
+('LEGAL'),
+('SALES');
 INSERT INTO role (title, salary, department_id) VALUES 
 ('Manager', 60000, 1),
 ('Lawyer', 50000, 4),
