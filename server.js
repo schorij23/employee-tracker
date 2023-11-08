@@ -240,7 +240,7 @@ function viewAllEmployees() {
         
           var allRoleNames = [];
           function getAllRoles() {
-            connection.query('SELECT role_id,id FROM employee', (err, results) => {
+            connection.query('SELECT id, title FROM role', (err, results) => {
               // If there is an error reject the query
               if (err) {
                 console.error('Error querying roles:', err);
@@ -251,7 +251,7 @@ function viewAllEmployees() {
                 for (let index = 0; index < results.length; index++) {
                   const element = results[index];
                   console.log(element);
-                  allRoleNames.push({name :element.role_id, value:element.id});
+                  allRoleNames.push({name :element.title, value :element.id});
                   
                 }
               }
