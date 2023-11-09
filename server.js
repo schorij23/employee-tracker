@@ -116,12 +116,19 @@ function viewAllRoles() {
 
 // Function to view all employees
 function viewAllEmployees() {
-  // Create a asynchronous promise using resolve and reject to handle the results
+  const sql =`
+  SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, 
+  CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
+  FROM employee 
+  LEFT JOIN role on employee.role_id = role.id 
+  LEFT JOIN department on role.department_id = department.id 
+  LEFT JOIN employee manager on manager.id = employee.manager_id;`;
+  
   return new Promise((resolve, reject) => {
     /*LOGIC for this currently SELECT * shows id, first_name, last_name, role_id, manager_id,
       THE CRITERA wants id, first_name, last_name, title, departments, salary and the manager name (dont have manager yet) */
 
-    connection.query('SELECT * FROM employee', (err, results) => {
+    connection.query(sql, (err, results) => {
       if (err) {
         console.error('Error querying employees:', err);
         reject(err);
