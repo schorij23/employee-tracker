@@ -95,9 +95,14 @@ connection.connect(function (err) {
 
 // Function to view all roles
 function viewAllRoles() {
+  const sql =`
+  SELECT r.id, r.title, r.salary, d.name AS department
+  FROM role AS r
+  JOIN department AS d ON r.department_id = d.id
+`;
   // Create a asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM role', (err, results) => {
+    connection.query(sql, (err, results) => {
       if (err) {
         console.error('Error querying roles:', err);
         reject(err);
@@ -108,6 +113,7 @@ function viewAllRoles() {
     });
   });
 }
+
 
 // Function to view all employees
 function viewAllEmployees() {
@@ -261,29 +267,29 @@ function viewAllEmployees() {
               /* LOGIC FOR THIS Add ALL EMPLOYEES I Need a query to show MANAGERS NAME NOT manager_id on 4th prompt not manager id
             manager_id is to employee id, the employer would know who their managers are so you list the
             employees by name*/
-          // var allEmployeeNames = [];
-          // function getAllEmployees() {
+          var allEmployeeNames = [];
+          function getAllEmployees() {
             /* LOGIC FOR THIS I Need a query to show manager name on 4th prompt not manager id
             manager_id is to employee id, the employer would know who their managers are so you list the
             employees by name*/
-          //   connection.query('SELECT id, title FROM role', (err, results) => {
+            connection.query('SELECT id, title FROM role', (err, results) => {
               
-          //     if (err) {
-          //       console.error('Error querying roles:', err);
-          //       reject(err);
+              if (err) {
+                 console.error('Error querying roles:', err);
+                 reject(err);
                 
-          //     } else {
+               } else {
     
-          //       for (let index = 0; index < results.length; index++) {
-          //         const element = results[index];
-          //         console.log(element);
-          //         allEmployeeNames.push({name :element.title, value :element.id});
+                 for (let index = 0; index < results.length; index++) {
+                   const element = results[index];
+                  console.log(element);
+                  allEmployeeNames.push({name :element.title, value :element.id});
                   
-          //       }
-          //     }
+                 }
+               }
                 
-          //   });
-          // }
+             });
+          }
 
       // Function to prompt for employee information
       async function promptForEmployeeInfo() {
