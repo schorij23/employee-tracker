@@ -258,8 +258,32 @@ function viewAllEmployees() {
                 
             });
           }
-
-
+              /* LOGIC FOR THIS Add ALL EMPLOYEES I Need a query to show MANAGERS NAME NOT manager_id on 4th prompt not manager id
+            manager_id is to employee id, the employer would know who their managers are so you list the
+            employees by name*/
+          // var allEmployeeNames = [];
+          // function getAllEmployees() {
+            /* LOGIC FOR THIS I Need a query to show manager name on 4th prompt not manager id
+            manager_id is to employee id, the employer would know who their managers are so you list the
+            employees by name*/
+          //   connection.query('SELECT id, title FROM role', (err, results) => {
+              
+          //     if (err) {
+          //       console.error('Error querying roles:', err);
+          //       reject(err);
+                
+          //     } else {
+    
+          //       for (let index = 0; index < results.length; index++) {
+          //         const element = results[index];
+          //         console.log(element);
+          //         allEmployeeNames.push({name :element.title, value :element.id});
+                  
+          //       }
+          //     }
+                
+          //   });
+          // }
 
       // Function to prompt for employee information
       async function promptForEmployeeInfo() {
@@ -301,7 +325,7 @@ function viewAllEmployees() {
       function addEmployee(first_name, last_name, role_id, manager_id) {
         // Create a asynchronous promise using resolve and reject to handle the results
         return new Promise((resolve, reject) => {
-          // Convert manager_id to an integer or set it to null if it's empty
+          // Convert manager_id to an integer or set it to null if it's empty  I'M NOT SURE ABOUT THIS
             manager_id = manager_id === '' ? null : parseInt(manager_id);
           const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
           connection.query(sql, [first_name, last_name, role_id, manager_id], (err, results) => {
@@ -315,7 +339,9 @@ function viewAllEmployees() {
           });
         });
       }
-// Function to update an employee's role
+
+  /* YOU want to update an employes role by their name and THEN update the role also by name*/
+
 function updateEmployeeRole(employeeId, newRoleId) {
   // Create an asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
