@@ -246,7 +246,7 @@ function viewAllEmployees() {
         
           var allRoleNames = [];
           function getAllRoles() {
-            connection.query('SELECT title FROM role', (err, results) => {
+            connection.query('SELECT id, title FROM role', (err, results) => {
               // If there is an error reject the query
               if (err) {
                 console.error('Error querying roles:', err);
@@ -257,7 +257,7 @@ function viewAllEmployees() {
                 for (let index = 0; index < results.length; index++) {
                   const element = results[index];
                   console.log(element);
-                  allRoleNames.push({name :element.title});
+                  allRoleNames.push({name :element.title, value :element.id});
                   
                 }
               }
@@ -267,31 +267,32 @@ function viewAllEmployees() {
               /* LOGIC FOR THIS Add ALL EMPLOYEES I Need a query to show MANAGERS NAME NOT manager_id on 4th prompt not manager id
             manager_id is to employee id, the employer would know who their managers are so you list the
             employees by name*/
-          var allEmployeeNames = [];
-          function getAllEmployees() {
-            connection.query('SELECT first_name, last_name FROM employee', (err, results) => {
+          // var allEmployeeNames = [];
+          // function getAllEmployees() {
+          //   connection.query('SELECT first_name, last_name FROM employee', (err, results) => {
               
-              if (err) {
-                 console.error('Error querying roles:', err);
-                 reject(err);
+          //     if (err) {
+          //        console.error('Error querying roles:', err);
+          //        reject(err);
                 
-               } else {
+          //      } else {
     
-                 for (let index = 0; index < results.length; index++) {
-                   const element = results[index];
-                  console.log(element);
-                  allEmployeeNames.push({name: `${element.first_name} ${element.last_name}`, value: element.id});
+          //        for (let index = 0; index < results.length; index++) {
+          //          const element = results[index];
+          //         console.log(element);
+          //         allEmployeeNames.push({name: `${element.first_name} ${element.last_name}`});
                   
-                 }
-               }
+          //        }
+          //      }
                 
-             });
-          }
+          //    });
+          // }
 
       // Function to prompt for employee information
       async function promptForEmployeeInfo() {
         getAllRoles();
-        getAllEmployees();
+        // getAllEmployees();
+        
         return new Promise((resolve, reject) => {
           inquirer
             .prompt([
@@ -313,14 +314,15 @@ function viewAllEmployees() {
               },
               {
                 // Needs to be manager name or null not id change to list function with choices function getAllEmployees?
-                // type: 'input',
-                type: 'list',
+                type: 'input',
+                // type: 'list',
                 name: 'manager_id',
                 message: 'Enter the manager\'s name for this employee (or leave empty if none):',
-                choices: allEmployeeNames,
+                // choices: allEmployeeNames,
               },
             ])
             .then((answers) => {
+              console.log(answers)
               resolve(answers);
             })
             .catch((error) => {
@@ -331,9 +333,11 @@ function viewAllEmployees() {
       // Function to add an employee
       function addEmployee(first_name, last_name, role_id, manager_id) {
         // Create a asynchronous promise using resolve and reject to handle the results
+
         return new Promise((resolve, reject) => {
           // Convert manager_id to an integer or set it to null if it's empty  I'M NOT SURE ABOUT THIS
-            manager_id = manager_id === '' ? null : parseInt(manager_id);
+          console.log(manager_id);
+            manager_id = manager_id === "" ? null : parseInt(manager_id);
           const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
           connection.query(sql, [first_name, last_name, role_id, manager_id], (err, results) => {
             if (err) {
