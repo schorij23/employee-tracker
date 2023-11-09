@@ -96,7 +96,7 @@ connection.connect(function (err) {
 // Function to view all roles
 function viewAllRoles() {
   const sql =`
-  SELECT r.id, r.title, r.salary, d.name AS department
+  SELECT r.id, r.title, d.name AS department, r.salary
   FROM role AS r
   JOIN department AS d ON r.department_id = d.id
 `;
