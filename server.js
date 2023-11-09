@@ -114,11 +114,13 @@ function viewAllRoles() {
   });
 }
 
-
 // Function to view all employees
 function viewAllEmployees() {
   // Create a asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
+    /*LOGIC for this currently SELECT * shows id, first_name, last_name, role_id, manager_id,
+      THE CRITERA wants id, first_name, last_name, title, departments, salary and the manager name (dont have manager yet) */
+
     connection.query('SELECT * FROM employee', (err, results) => {
       if (err) {
         console.error('Error querying employees:', err);
@@ -130,7 +132,6 @@ function viewAllEmployees() {
     });
   });
 }
-      // REMEMBER TO CHANGE TO LIST WITH MULTIPLE CHOICES
       // Function to prompt to add a department
       function promptForDepartmentInfo() {
         return new Promise((resolve, reject) => {
@@ -153,7 +154,6 @@ function viewAllEmployees() {
 
       
       function addDepartment(name) {
-        // Create a asynchronous promise using resolve and reject to handle the results
           return new Promise((resolve, reject) => {
             const sql = 'INSERT INTO department (name) VALUES (?)';
             connection.query(sql, [name], (err, results) => {
@@ -246,7 +246,7 @@ function viewAllEmployees() {
         
           var allRoleNames = [];
           function getAllRoles() {
-            connection.query('SELECT id, title FROM role', (err, results) => {
+            connection.query('SELECT title FROM role', (err, results) => {
               // If there is an error reject the query
               if (err) {
                 console.error('Error querying roles:', err);
@@ -257,7 +257,7 @@ function viewAllEmployees() {
                 for (let index = 0; index < results.length; index++) {
                   const element = results[index];
                   console.log(element);
-                  allRoleNames.push({name :element.title, value :element.id});
+                  allRoleNames.push({name :element.title});
                   
                 }
               }
@@ -269,10 +269,7 @@ function viewAllEmployees() {
             employees by name*/
           var allEmployeeNames = [];
           function getAllEmployees() {
-            /* LOGIC FOR THIS I Need a query to show manager name on 4th prompt not manager id
-            manager_id is to employee id, the employer would know who their managers are so you list the
-            employees by name*/
-            connection.query('SELECT id, title FROM role', (err, results) => {
+            connection.query('SELECT first_name, last_name FROM employee', (err, results) => {
               
               if (err) {
                  console.error('Error querying roles:', err);
@@ -283,7 +280,7 @@ function viewAllEmployees() {
                  for (let index = 0; index < results.length; index++) {
                    const element = results[index];
                   console.log(element);
-                  allEmployeeNames.push({name :element.title, value :element.id});
+                  allEmployeeNames.push({name: `${element.first_name} ${element.last_name}`, value: element.id});
                   
                  }
                }
@@ -293,7 +290,8 @@ function viewAllEmployees() {
 
       // Function to prompt for employee information
       async function promptForEmployeeInfo() {
-        getAllRoles()
+        getAllRoles();
+        getAllEmployees();
         return new Promise((resolve, reject) => {
           inquirer
             .prompt([
@@ -314,9 +312,12 @@ function viewAllEmployees() {
                 choices: allRoleNames,
               },
               {
-                type: 'input',
+                // Needs to be manager name or null not id change to list function with choices function getAllEmployees?
+                // type: 'input',
+                type: 'list',
                 name: 'manager_id',
-                message: 'Enter the manager\'s ID for this employee (or leave empty if none):',
+                message: 'Enter the manager\'s name for this employee (or leave empty if none):',
+                choices: allEmployeeNames,
               },
             ])
             .then((answers) => {
@@ -346,7 +347,7 @@ function viewAllEmployees() {
         });
       }
 
-  /* YOU want to update an employes role by their name and THEN update the role also by name*/
+  /* YOU want to update an employes role by their name and THEN update the role also by name not id number*/
 
 function updateEmployeeRole(employeeId, newRoleId) {
   // Create an asynchronous promise using resolve and reject to handle the results
