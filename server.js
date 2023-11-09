@@ -23,7 +23,7 @@ connection.connect(function (err) {
         startDb();
       });
 
-      figlet("Employee Tracker", { font: 'Standard', box: true }, function (err, data) {
+      figlet("Employee Tracker", { font: 'Big' }, function (err, data) {
         if (err) {
           console.log("Something went wrong...");
           console.dir(err);
