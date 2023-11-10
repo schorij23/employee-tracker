@@ -324,7 +324,7 @@ async function promptForEmployeeInfo() {
         
         type: 'list',
         name: 'manager_id',
-        message: 'Enter the manager\'s name for this employee (or leave empty if none):',
+        message: 'Enter the manager\'s name for this employee (or choose None):',
         choices: managerChoices,
       },
     ])
