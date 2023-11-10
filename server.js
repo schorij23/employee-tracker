@@ -377,34 +377,56 @@ function updateEmployeeRole(employeeId, newRoleId) {
 // Function to prompt for update employee role information
 function promptForUpdateEmployeeRoleInfo() {
   return new Promise((resolve, reject) => {
-    inquirer
-      .prompt([
-        {
-          type: 'input',
-          name: 'employeeId',
-          message: 'Enter the employee\'s ID whose role you want to update:',
-        },
-        {
-          type: 'input',
-          name: 'newRoleId',
-          message: 'Enter the new role ID for the employee:',
-        },
-      ])
-      .then((answers) => {
-        updateEmployeeRole(answers.employeeId, answers.newRoleId)
-          .then(() => {
-            resolve();
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      })
-      .catch((error) => {
-        reject(error);
-      });
+    // Fetch and display employee names
+    connection.query('SELECT id, first_name, last_name FROM employee', (err, employees) => {
+      if (err) {
+        reject(err);
+      } else {
+        const employeeChoices = employees.map((employee) => ({
+          name: `${employee.first_name} ${employee.last_name}`,
+          value: employee.id,
+        }));
+
+        // Fetch and display role titles
+        connection.query('SELECT id, title FROM role', (err, roles) => {
+          if (err) {
+            reject(err);
+          } else {
+            const roleChoices = roles.map((role) => ({
+              name: role.title,
+              value: role.id,
+            }));
+
+            inquirer
+              .prompt([
+                {
+                  type: 'list',
+                  name: 'employeeId',
+                  message: 'Choose the employee whose role you want to update:',
+                  choices: employeeChoices,
+                },
+                {
+                  type: 'list',
+                  name: 'newRoleId',
+                  message: 'Choose the new role for the employee:',
+                  choices: roleChoices,
+                },
+              ])
+              .then((answers) => {
+                updateEmployeeRole(answers.employeeId, answers.newRoleId)
+                  .then(() => {
+                    resolve();
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          }
+        });
+      }
+    });
   });
 }
-
-
-
-
