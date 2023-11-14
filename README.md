@@ -39,10 +39,8 @@ For more details, see [License Details](https://choosealicense.com/licenses/mit/
   - Email address schorij23@gmail.com
 
 ## Walkthrough
-
-
-https://github.com/schorij23/svg-logo-maker/assets/5600528/dd79b7ef-02d0-4cb2-805e-fa46c6140fc5
-
+Employee Tracker Walkthrough video link
+https://github.com/schorij23/employee-tracker/assets/5600528/974dac98-71fe-45ef-b6e9-30e7d8718fa9
 
 ## Screenshots
 Employee Tracker Command Line <br>
