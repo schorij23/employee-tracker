@@ -23,7 +23,7 @@ connection.connect(function (err) {
   console.log('connected');
   startDb();
 });
-
+// Generates ASCII art using big font style
 figlet("Employee Tracker", { font: 'Big' }, function (err, data) {
   if (err) {
     console.log("Something went wrong...");
@@ -32,7 +32,7 @@ figlet("Employee Tracker", { font: 'Big' }, function (err, data) {
   }
   console.log(data);
 });
-// Function to start the Database
+// Function to start the Database an prompt user options
 function startDb() {
   return inquirer
     .prompt([
@@ -47,6 +47,7 @@ function startDb() {
         ],
       },
     ])
+    // Handles the combination of SQL queries and Inquirer Prompts 
     .then((userChoice) => {
       if (userChoice.options === 'View all departments') {
         return viewAllDepartments();
@@ -96,6 +97,7 @@ function viewAllDepartments() {
 
 // Function to view all roles
 function viewAllRoles() {
+  // SQL query to select role details and department names
   const sql = `
   SELECT r.id, r.title, d.name AS department, r.salary
   FROM role AS r
@@ -103,11 +105,13 @@ function viewAllRoles() {
 `;
   // Create a asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
+    // Execute the SQL query using the connection
     connection.query(sql, (err, results) => {
       if (err) {
         console.error('Error querying roles:', err);
         reject(err);
       } else {
+        // Shows results in a table
         console.table(results);
         resolve(results);
       }
@@ -115,8 +119,9 @@ function viewAllRoles() {
   });
 }
 
-// Function to view all employees
+// Function to view all employees in the database
 function viewAllEmployees() {
+  // SQL query to fetch employee data and include with role, department, and manager information
   const sql = `
   SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, 
   CONCAT(manager.first_name, ' ', manager.last_name) AS manager 
@@ -126,14 +131,13 @@ function viewAllEmployees() {
   LEFT JOIN employee manager on manager.id = employee.manager_id;`;
 
   return new Promise((resolve, reject) => {
-    /*LOGIC for this currently SELECT * shows id, first_name, last_name, role_id, manager_id,
-      THE CRITERA wants id, first_name, last_name, title, departments, salary and the manager name (dont have manager yet) */
 
     connection.query(sql, (err, results) => {
       if (err) {
         console.error('Error querying employees:', err);
         reject(err);
       } else {
+        // Show results in a table form
         console.table(results);
         resolve(results);
       }
@@ -142,6 +146,7 @@ function viewAllEmployees() {
 }
 // Function to prompt to add a department
 function promptForDepartmentInfo() {
+  // Create a asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
     inquirer
       .prompt([
@@ -160,31 +165,34 @@ function promptForDepartmentInfo() {
   });
 }
 
-
+// Function to add a new department to the database
 function addDepartment(name) {
   return new Promise((resolve, reject) => {
+    // SQL query to insert a new department with the name
     const sql = 'INSERT INTO department (name) VALUES (?)';
     connection.query(sql, [name], (err, results) => {
       if (err) {
         console.error('Error adding department:', err);
         reject(err);
       } else {
+        // If the database operation is successful, log a success message
         console.log(`Department '${name}' added successfully.`);
         resolve(results);
       }
     });
   });
 }
+//  Variable to store an array of department name and Id
 var allDepartmentNames = [];
+// Function to get all the departments
 function getAllDepartments() {
+  //  SQL query to select department names and IDs from department table 
   connection.query('SELECT name,id FROM department', (err, results) => {
-    // If there is an error reject the query
     if (err) {
       console.error('Error querying departments:', err);
       reject(err);
-      // Otherwise Return the Results
     } else {
-
+      // Loop through results and populate the allDepartmentNames array
       for (let index = 0; index < results.length; index++) {
         const element = results[index];
         // console.log(element);
@@ -197,8 +205,10 @@ function getAllDepartments() {
 }
 // Function to prompt for role information
 async function promptForRoleInfo() {
+  // Call function to get all departments
   getAllDepartments();
   return new Promise((resolve, reject) => {
+    // Choices for allDepartmentNames from get all departments array
     inquirer
       .prompt([
         {
@@ -219,11 +229,7 @@ async function promptForRoleInfo() {
         },
       ])
       .then((answers) => {
-        // loop through results variable on 174 find department id that matches the choosen department??
-        // change answer for department id from department name to id number in the departmentId
-        // allDepartmentNames variable needs to work with addRole function
-        // change the string input to int to Set the correct department ID as an integer
-        //answers.departmentId = choosen department id (something like this?)
+
         resolve(answers);
 
       })
@@ -234,10 +240,11 @@ async function promptForRoleInfo() {
 }
 
 
-// Function to add a role
+// Function to add a role to database
 function addRole(title, salary, department_id) {
   // Create a asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
+    // SQL query to insert a new role into the role table
     const sql = 'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)';
     connection.query(sql, [title, salary, department_id], (err, results) => {
       if (err) {
@@ -251,17 +258,17 @@ function addRole(title, salary, department_id) {
   });
 }
 
-
+// Array to store role names and IDs
 var allRoleNames = [];
+// Function to get All Roles
 function getAllRoles() {
+  // Query the 'role' table to get role IDs and titles
   connection.query('SELECT id, title FROM role', (err, results) => {
-    // If there is an error reject the query
     if (err) {
       console.error('Error querying roles:', err);
       reject(err);
-      // Otherwise Return the Results
     } else {
-
+      // Loop through the results and populate the allRoleNames array
       for (let index = 0; index < results.length; index++) {
         const element = results[index];
         console.log(element);
@@ -272,11 +279,11 @@ function getAllRoles() {
 
   });
 }
-/* LOGIC FOR THIS Add ALL EMPLOYEES I Need a query to show MANAGERS NAME NOT manager_id on 4th prompt not manager id
-manager_id is to employee id, the employer would know who their managers are so you list the
-employees by name*/
+// Array to store information about all employees
 var allEmployeeNames = [];
+// Function to get all employee
 function getAllEmployees() {
+  // Query to select the first_name, last_name, and id columns from the employee table
   connection.query('SELECT first_name, last_name, id FROM employee', (err, results) => {
 
     if (err) {
@@ -284,7 +291,7 @@ function getAllEmployees() {
       reject(err);
 
     } else {
-      // allEmployeeNames.push({ name: 'None', value: null });
+      // Loop through the results and populate the allEmployeeNames array
       for (let index = 0; index < results.length; index++) {
         const element = results[index];
         console.log(element);
@@ -298,11 +305,14 @@ function getAllEmployees() {
 
 // Function to prompt for employee information
 async function promptForEmployeeInfo() {
+  // Call functions to get all roles and employees
   getAllRoles();
   getAllEmployees();
   var managerChoices = allEmployeeNames;
+  // Give the option to chose no manager_id for the employee added
   managerChoices.push({ name: 'None', value: null});
   return inquirer
+  // Choices for allRoleNames and manager choices arrays
     .prompt([
       {
         type: 'input',
@@ -339,11 +349,11 @@ async function promptForEmployeeInfo() {
 // Function to add an employee
 function addEmployee(first_name, last_name, role_id, manager_id) {
   // Create a asynchronous promise using resolve and reject to handle the results
-
   return new Promise((resolve, reject) => {
-    // Convert manager_id to an integer or set it to null if it's empty  I'M NOT SURE ABOUT THIS
     console.log(manager_id);
+    // Query to insert a new employee into the employee table
     const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+    // Execute query with the first and last name and manager id parameters
     connection.query(sql, [first_name, last_name, role_id, manager_id], (err, results) => {
       if (err) {
         console.error('Error adding employee:', err);
@@ -356,12 +366,13 @@ function addEmployee(first_name, last_name, role_id, manager_id) {
   });
 }
 
-/* YOU want to update an employes role by their name and THEN update the role also by name not id number*/
 
 function updateEmployeeRole(employeeId, newRoleId) {
   // Create an asynchronous promise using resolve and reject to handle the results
   return new Promise((resolve, reject) => {
+    // Query to update the employee role based on employee ID
     const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
+    // Execute query with new role id and employee id  parameters
     connection.query(sql, [newRoleId, employeeId], (err, results) => {
       if (err) {
         console.error('Error updating employee role:', err);
@@ -377,26 +388,28 @@ function updateEmployeeRole(employeeId, newRoleId) {
 // Function to prompt for update employee role information
 function promptForUpdateEmployeeRoleInfo() {
   return new Promise((resolve, reject) => {
-    // Fetch and display employee names
+    // Query to select if , first name and last name from employee table
     connection.query('SELECT id, first_name, last_name FROM employee', (err, employees) => {
       if (err) {
         reject(err);
       } else {
+        // Use map to create a new array employee choices from employees array
         const employeeChoices = employees.map((employee) => ({
           name: `${employee.first_name} ${employee.last_name}`,
           value: employee.id,
         }));
 
-        // Fetch and display role titles
+        // Query to select id and role from role table
         connection.query('SELECT id, title FROM role', (err, roles) => {
           if (err) {
             reject(err);
           } else {
+            // Use map to create a new array role choices from roles array
             const roleChoices = roles.map((role) => ({
               name: role.title,
               value: role.id,
             }));
-
+            // Prompt user to select from employee choices and role choices arrays
             inquirer
               .prompt([
                 {
@@ -413,6 +426,7 @@ function promptForUpdateEmployeeRoleInfo() {
                 },
               ])
               .then((answers) => {
+                // After the choice is made the answers are used with the update employee role function
                 updateEmployeeRole(answers.employeeId, answers.newRoleId)
                   .then(() => {
                     resolve();
