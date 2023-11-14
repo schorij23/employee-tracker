@@ -271,7 +271,6 @@ function getAllRoles() {
       // Loop through the results and populate the allRoleNames array
       for (let index = 0; index < results.length; index++) {
         const element = results[index];
-        console.log(element);
         allRoleNames.push({ name: element.title, value: element.id });
 
       }
@@ -294,7 +293,7 @@ function getAllEmployees() {
       // Loop through the results and populate the allEmployeeNames array
       for (let index = 0; index < results.length; index++) {
         const element = results[index];
-        console.log(element);
+        // console.log(element);
         allEmployeeNames.push({ name: `${element.first_name} ${element.last_name}`, value: element.id });
 
       }
@@ -339,7 +338,6 @@ async function promptForEmployeeInfo() {
       },
     ])
     .then((answers) => {
-      console.log(answers)
       return answers;
     })
     .catch((error) => {
