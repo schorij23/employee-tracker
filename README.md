@@ -24,7 +24,7 @@ Install mysql Server [mysql Server](https://dev.mysql.com/downloads/mysql/) to u
 Install mysql2 [npm mysql2](https://www.npmjs.com/package/mysql2) for mysql Database Server Integration <br>
 
 ## Usage
-This application is used to generate SVG Logos
+This application is used to track and update employees, departments and roles with a database
 
 ## License
 The project is licensed by the MIT License.
